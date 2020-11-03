@@ -29,7 +29,7 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
 ```{r}
 set.seed(719)
-data = runif(10000) %>% 
+data = runif(50000) %>% 
   tibble() %>% 
   rename("value" = ".")
 
@@ -39,28 +39,23 @@ data %>%
 ```
 
 ```{r}
-p = c(0.017, 0.043, 0.1, 0.22, 0.41)
-```
-
-
-
-```{r}
-design3plus3 = function() {
+design3plus3 = function(p = c(0.017, 0.043, 0.1, 0.22, 0.41)) {
   ntox = 0
   i = 1
   j = 1
-  for (l in 1:2) {
-    l = 1
-    res = vector(mode = "list", length = 2)
-    while (ntox < 3 && i %in% c(1:5) && j %in% 1:3333) {
+  l = 1
+  res = vector(mode = "list", length = 1000)
+  fin = NULL
+  for (l in 1:1000) {
+    while (ntox < 2 && i %in% c(1:5) && j %in% 1:16666) {
       for (k in (3*(j-1)+1):(3*(j-1)+3)) {
         ntox = if_else(pull(data, value)[[k]] < p[[i]], (ntox + 1), ntox)
-        res[[l]] = rbind(res, cbind(ntox, i, k))
+        res = rbind(res, cbind(ntox, i, k, l))
       }
-      if(ntox %in% c(1,2)) {
+      if(ntox == 1) {
         for (k in (3*j+1):(3*j+3)) {
           ntox = if_else(pull(data, value)[[k]] < p[[i]], (ntox + 1), ntox)
-          res[[l]] = rbind(res, cbind(ntox, i, k))
+          res = rbind(res, cbind(ntox, i, k, l))
         }
         j = j + 1
       }
@@ -68,32 +63,80 @@ design3plus3 = function() {
       i = i + 1
       j = j + 1
     }
+    fin[[l]] = res %>% 
+      data.frame() %>% 
+      tibble() %>% 
+      unnest(cols = c(ntox, i, k, l)) %>% 
+      summarize(ntox = last(ntox),
+                i = last(i),
+                k = last(k),
+                l = last(l))
     i = 1
     j = k/3
     ntox = 0
     l = l + 1
   }
-  res = rbind(res)
-  return(res)
+  fin = bind_rows(fin)
+  return(fin)
 }
+```
 
-design3plus3()
+## pi = c(0.017, 0.043, 0.1, 0.22, 0.41)
+
+```{r, cache = TRUE}
+finl_df = design3plus3()
+````
+```{r}
+finl_df %>% 
+  pull(i) %>% 
+  hist(breaks = c(1, 2, 3, 4, 5))
+```
+
+## pi = c(0.10, 0.22, 0.41, 0.64, 0.81)
+
+```{r, cache = TRUE}
+finl_df1 = design3plus3(p = c(0.10, 0.22, 0.41, 0.64, 0.81))
 ```
 
 ```{r}
-design3plus3()
+finl_df1 %>% 
+  pull(i) %>% 
+  hist(breaks = c(1:5))
+```
+
+## pi = c(0.043, 0.10, 0.22, 0.41, 0.64)
+
+```{r, cache = TRUE}
+finl_df2 = design3plus3(p = c(0.043, 0.10, 0.22, 0.41, 0.64))
 ```
 
 ```{r}
-design3plus3_repeat = function() {
-  MTD = vector(mode = "list", length = 2)
-  # res = NULL
-  for (l in 1:2) {
-    MTD[[l]] = design3plus3(0, 1, 1)
-  }
-  return(MTD)
-}
+finl_df2 %>% 
+  pull(i) %>% 
+  hist(breaks = c(1:5))
+```
 
-design3plus3_repeat()
+## pi = c(0.007, 0.017, 0.043, 0.10, 0.22)
+
+```{r, cache = TRUE}
+finl_df3 = design3plus3(p = c(0.007, 0.017, 0.043, 0.10, 0.22))
+```
+
+```{r}
+finl_df3 %>% 
+  pull(i) %>% 
+  hist(breaks = c(1:5))
+```
+
+## pi = c(0.003, 0.007, 0.017, 0.043, 0.10)
+
+```{r, cache = TRUE}
+finl_df4 = design3plus3(p = c(0.003, 0.007, 0.017, 0.043, 0.10))
+```
+
+```{r}
+finl_df4 %>% 
+  pull(i) %>% 
+  hist(breaks = c(1:5))
 ```
 
