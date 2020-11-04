@@ -39,7 +39,7 @@ data %>%
 ```
 
 ```{r}
-design3plus3 = function(n = 6, p = c(0.017, 0.043, 0.1, 0.22, 0.41)) {
+design3plus3 = function(n = 10, p = c(0.017, 0.043, 0.1, 0.22, 0.41)) {
   ntox = 0
   i = 1
   j = 1
@@ -70,6 +70,9 @@ design3plus3 = function(n = 6, p = c(0.017, 0.043, 0.1, 0.22, 0.41)) {
       i = i + 1
       j = j + 1
     }
+    if (ntox < 2) {
+      i = i - 1
+    }
     fin[[l]] = res %>%
       data.frame() %>%
       tibble() %>%
@@ -91,8 +94,9 @@ design3plus3 = function(n = 6, p = c(0.017, 0.043, 0.1, 0.22, 0.41)) {
 ## pi = c(0.017, 0.043, 0.1, 0.22, 0.41)
 
 ```{r, cache = TRUE}
-finl_df = design3plus3(n = 1000)
+finl_df = design3plus3()
 ````
+
 ```{r}
 finl_df %>% 
   pull(i) %>% 
@@ -102,7 +106,7 @@ finl_df %>%
 ## pi = c(0.10, 0.22, 0.41, 0.64, 0.81)
 
 ```{r, cache = TRUE}
-finl_df1 = design3plus3(n = 1000, p = c(0.10, 0.22, 0.41, 0.64, 0.81))
+finl_df1 = design3plus3(p = c(0.10, 0.22, 0.41, 0.64, 0.81))
 ```
 
 ```{r}
@@ -114,7 +118,7 @@ finl_df1 %>%
 ## pi = c(0.043, 0.10, 0.22, 0.41, 0.64)
 
 ```{r, cache = TRUE}
-finl_df2 = design3plus3(n = 1000, p = c(0.043, 0.10, 0.22, 0.41, 0.64))
+finl_df2 = design3plus3(p = c(0.043, 0.10, 0.22, 0.41, 0.64))
 ```
 
 ```{r}
@@ -126,7 +130,7 @@ finl_df2 %>%
 ## pi = c(0.007, 0.017, 0.043, 0.10, 0.22)
 
 ```{r, cache = TRUE}
-finl_df3 = design3plus3(n = 1000, p = c(0.007, 0.017, 0.043, 0.10, 0.22))
+finl_df3 = design3plus3(p = c(0.007, 0.017, 0.043, 0.10, 0.22))
 ```
 
 ```{r}
@@ -138,7 +142,7 @@ finl_df3 %>%
 ## pi = c(0.003, 0.007, 0.017, 0.043, 0.10)
 
 ```{r, cache = TRUE}
-finl_df4 = design3plus3(n = 1000, p = c(0.003, 0.007, 0.017, 0.043, 0.10))
+finl_df4 = design3plus3(p = c(0.003, 0.007, 0.017, 0.043, 0.10))
 ```
 
 ```{r}
